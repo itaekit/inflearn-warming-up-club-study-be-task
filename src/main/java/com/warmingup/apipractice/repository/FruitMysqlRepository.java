@@ -1,8 +1,8 @@
-package com.warmingup.apipractice.service;
+package com.warmingup.apipractice.repository;
 
 import com.warmingup.apipractice.domain.FruitSalesStatus;
 import com.warmingup.apipractice.dto.fruit.response.FruitSalesResponse;
-import com.warmingup.apipractice.repository.FruitRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
+@Primary
 public class FruitMysqlRepository implements FruitRepository {
     private final JdbcTemplate jdbcTemplate;
 
@@ -37,17 +38,8 @@ public class FruitMysqlRepository implements FruitRepository {
             return new FruitSalesStatus(fruitName, price, isSold);
         }, name);
 
-        long salesAmount = 0L;
-        long notSalesAmount = 0L;
-
-        for (FruitSalesStatus fruitSalesStatus : list) {
-            if (fruitSalesStatus.isSold()) {
-                salesAmount += fruitSalesStatus.getPrice();
-            } else {
-                notSalesAmount += fruitSalesStatus.getPrice();
-            }
-        }
-
+        Long salesAmount = list.stream().filter(fruit -> fruit.isSold()).mapToLong(f -> f.getPrice()).sum();
+        Long notSalesAmount = list.stream().filter(fruit -> !fruit.isSold()).mapToLong(f -> f.getPrice()).sum();
         return new FruitSalesResponse(salesAmount, notSalesAmount);
     }
 }

@@ -1,8 +1,7 @@
-package com.warmingup.apipractice.service;
+package com.warmingup.apipractice.repository;
 
 import com.warmingup.apipractice.domain.Fruit;
 import com.warmingup.apipractice.dto.fruit.response.FruitSalesResponse;
-import com.warmingup.apipractice.repository.FruitRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-@Primary
 public class FruitMemoryRepository implements FruitRepository {
     private List<Fruit> fruitList;
 
@@ -37,7 +35,6 @@ public class FruitMemoryRepository implements FruitRepository {
     public FruitSalesResponse getFruitSalesResult(String name) {
         Long salesAmount = fruitList.stream().filter(fruit -> fruit.isSold()).mapToLong(f -> f.getPrice()).sum();
         Long notSalesAmount = fruitList.stream().filter(fruit -> !fruit.isSold()).mapToLong(f -> f.getPrice()).sum();
-        System.out.println("계산완료 : " +  salesAmount + ", " + notSalesAmount);
         return new FruitSalesResponse(salesAmount, notSalesAmount);
     }
 }
