@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface FruitRepository extends JpaRepository<Fruit, Long> {
     List<Fruit> findAllByName(String name);
-    List<FruitListElementResponse> findAllByPriceGreaterThan(Long price);
-    List<FruitListElementResponse> findAllByPriceLessThan(Long price);
+    List<Fruit> findAllByPriceGreaterThan(Long price);
+    List<Fruit> findAllByPriceLessThan(Long price);
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -53,12 +54,21 @@ public class FruitServiceV2 {
 
     @Transactional
     public List<FruitListElementResponse> getFruitList(String option, Long price) {
+        List<Fruit> fruitList;
+
         if (option.equals("GTE")) {
-            return fruitRepository.findAllByPriceGreaterThan(price);
+            fruitList = fruitRepository.findAllByPriceGreaterThan(price);
         } else if (option.equals("LTE")) {
-            return fruitRepository.findAllByPriceLessThan(price);
+            fruitList = fruitRepository.findAllByPriceLessThan(price);
         } else {
             throw new IllegalArgumentException("Invalid option");
         }
+
+        List<FruitListElementResponse> fruitListElementResponses = new ArrayList<>();
+        for (Fruit fruit : fruitList) {
+            fruitListElementResponses.add(new FruitListElementResponse(fruit.getName(), fruit.getPrice(), fruit.getWarehousingDate()));
+        }
+
+        return fruitListElementResponses;
     }
 }
