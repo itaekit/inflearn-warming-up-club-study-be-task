@@ -1,37 +1,34 @@
-package com.warmingup.apipractice.controller;
+package com.warmingup.apipractice.service;
 
 import com.warmingup.apipractice.domain.FruitSalesStatus;
-import com.warmingup.apipractice.dto.fruit.request.FruitCreateRequest;
-import com.warmingup.apipractice.dto.fruit.request.FruitUpdateRequest;
 import com.warmingup.apipractice.dto.fruit.response.FruitSalesResponse;
+import com.warmingup.apipractice.repository.FruitRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/v1/fruit/dead-api")
-public class Day04Controller {
+@Repository
+public class FruitMysqlRepository implements FruitRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public Day04Controller(JdbcTemplate jdbcTemplate) {
+    public FruitMysqlRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @PostMapping
-    public void saveFruit(@RequestBody FruitCreateRequest request) {
+    public void saveFruit(String name, LocalDate date, Long price ) {
         String sql = "INSERT INTO fruit (name, warehousing_date, price) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, request.getName(), request.getWarehousingDate(), request.getPrice());
+        jdbcTemplate.update(sql, name, date, price);
     }
 
-    @PutMapping
-    public void updateFruit(@RequestBody FruitUpdateRequest request) {
+
+    public void updateFruit(Long id) {
         String sql = "UPDATE fruit SET is_sold = 1 WHERE id = ?";
-        jdbcTemplate.update(sql, request.getId());
+        jdbcTemplate.update(sql, id);
     }
 
-    @GetMapping("/stat")
-    public FruitSalesResponse getFruitSalesResult(@RequestParam String name) {
+    public FruitSalesResponse getFruitSalesResult(String name) {
         String sql = "SELECT * FROM fruit WHERE name = ?";
         List<FruitSalesStatus> list = jdbcTemplate.query(sql, (rs, rowNum) -> {
             String fruitName = rs.getString("name");
@@ -53,5 +50,4 @@ public class Day04Controller {
 
         return new FruitSalesResponse(salesAmount, notSalesAmount);
     }
-
 }
